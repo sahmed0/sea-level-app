@@ -2,6 +2,8 @@
 
 import streamlit as st
 import pandas as pd
+import numpy as np
+from scipy.stats import linregress
 from prophet import Prophet
 import matplotlib.pyplot as plt
 
@@ -10,35 +12,64 @@ import matplotlib.pyplot as plt
 # ------------------------------------------------------------------------------
 
 st.set_page_config(page_title="Sea Level Predictor", layout="centered")
+MAX_PREDICTION_YEAR = 2100
 
 @st.cache_data
 def load_data():
-    """Loads the CSV data and caches it for speed."""
-    # Ensure the CSV file is in the same folder as this script
+    """Loads the CSV data."""
     df = pd.read_csv('epa-sea-level.csv')
     return df
 
-def train_prophet_model(df, years_to_predict):
+@st.cache_data
+def get_prophet_forecast(df):
     """
-    Trains a Prophet model and forecasts 'years_to_predict' into the future.
+    Trains the Prophet model ONCE and forecasts up to the global MAX_PREDICTION_YEAR (2100).
+    This function is cached, so it only runs the first time the app loads.
     """
-    # Prepare data for Prophet (rename columns to 'ds' and 'y')
+    # Prepare data
     data = df[['Year', 'CSIRO Adjusted Sea Level']].rename(columns={
         'Year': 'ds', 
         'CSIRO Adjusted Sea Level': 'y'
     })
     data['ds'] = pd.to_datetime(data['ds'], format='%Y')
 
-    # Initialise and fit model
+    # Fit Model
     m = Prophet(daily_seasonality=False, weekly_seasonality=False)
     m.fit(data)
 
-    # Create future dataframe
-    future = m.make_future_dataframe(periods=years_to_predict, freq='YS')
+    # Calculate years needed to reach 2100
+    last_year = df['Year'].max()
+    years_to_predict = MAX_PREDICTION_YEAR - last_year
     
-    # Predict
+    # Create forecast
+    future = m.make_future_dataframe(periods=years_to_predict, freq='YS')
     forecast = m.predict(future)
-    return m, forecast
+    
+    # We only return the forecast dataframe because that's all we need for plotting
+    return forecast
+
+def get_linear_predictions(df, target_year):
+    """Calculates linear regression points up to target_year."""
+    x = df['Year']
+    y = df['CSIRO Adjusted Sea Level']
+    res = linregress(x, y)
+    
+    years = np.arange(x.min(), target_year + 1)
+    preds = res.slope * years + res.intercept
+    target_val = res.slope * target_year + res.intercept
+    return years, preds, target_val
+
+def get_poly_predictions(df, target_year, degree=2):
+    """Calculates polynomial regression points up to target_year."""
+    x = df['Year']
+    y = df['CSIRO Adjusted Sea Level']
+    coefs = np.polyfit(x, y, degree)
+    poly_func = np.poly1d(coefs)
+    
+    years = np.arange(x.min(), target_year + 1)
+    preds = poly_func(years)
+    target_val = poly_func(target_year)
+    return years, preds, target_val
 
 # ------------------------------------------------------------------------------
 # 2. THE APP INTERFACE
@@ -46,85 +77,103 @@ def train_prophet_model(df, years_to_predict):
 
 st.title("🌊 Sea Level Predictor")
 st.markdown("""
-This web app uses **Facebook Prophet** to forecast sea level rises using historical data from CSIRO.
-Use the controls below to adjust the prediction timeline.
+Compare **Prophet**, **Linear Regression**, and **Polynomial Regression** models to forecast sea level rise.
 """)
 
-# Load data
 try:
     df = load_data()
-    st.success("Data loaded successfully!", icon="✅")
+    # success message removed to keep UI clean, or you can keep it:
+    # st.success("Data loaded", icon="✅") 
 except FileNotFoundError:
-    st.error("Error: 'epa-sea-level.csv' not found. Please place it in the same folder.")
+    st.error("Error: 'epa-sea-level.csv' not found.")
     st.stop()
 
-# Year Slider Controls
-st.divider() # Adds a nice visual separator
+# --- 1. PRE-CALCULATE PROPHET (Cached) ---
+# This runs once. Subsequent slider moves will just retrieve this variable instantly.
+with st.spinner('Initializing models...'):
+    full_prophet_forecast = get_prophet_forecast(df)
+
+# --- 2. USER INPUTS ---
+st.divider()
 st.subheader("Prediction Settings")
-target_year = st.slider("Select Target Year", min_value=2024, max_value=2100, value=2050)
-# ---------------------------------------------------
+target_year = st.slider("Select Target Year", min_value=2024, max_value=MAX_PREDICTION_YEAR, value=2050)
 
+# --- 3. FILTER DATA FOR DISPLAY ---
+# Slice the Prophet dataframe to only show up to the user's target year
+# We use the cached 'full_prophet_forecast' and just filter it.
+target_date_limit = pd.Timestamp(year=target_year, month=12, day=31)
+display_forecast = full_prophet_forecast[full_prophet_forecast['ds'] <= target_date_limit]
 
-# Calculate how many years to predict from the last data point
-last_year_in_data = df['Year'].max()
-years_to_predict = target_year - last_year_in_data
+# Get the specific prediction row for the target year
+target_date_start = pd.Timestamp(year=target_year, month=1, day=1)
+prophet_row = full_prophet_forecast[full_prophet_forecast['ds'] == target_date_start]
 
-if years_to_predict > 0:
-    with st.spinner('Training model...'):
-        model, forecast = train_prophet_model(df, years_to_predict)
-
-    # --------------------------------------------------------------------------
-    # 3. VISUALISATION
-    # --------------------------------------------------------------------------
-    
-    # Extract the specific prediction for the target year
-    # The forecast dataframe has a 'ds' column with dates. We find the row matching our target year.
-    target_date = pd.Timestamp(year=target_year, month=1, day=1)
-    prediction_row = forecast[forecast['ds'] == target_date]
-    
-    if not prediction_row.empty:
-        predicted_level = prediction_row['yhat'].values[0]
-        lower_bound = prediction_row['yhat_lower'].values[0]
-        upper_bound = prediction_row['yhat_upper'].values[0]
-
-        # Display Metrics
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Target Year", target_year)
-        col2.metric("Predicted Rise", f"{predicted_level:.2f} inches")
-        col3.metric("Uncertainty", f"± {(upper_bound - lower_bound)/2:.2f}")
-
-    # Plotting
-    st.subheader("Forecast Plot")
-    fig, ax = plt.subplots(figsize=(10, 6))
-
-    # Plot actual data
-    ax.scatter(df['Year'], df['CSIRO Adjusted Sea Level'], color='black', label='Observed Data', s=10)
-
-    # Plot forecast
-    # Convert the 'ds' column back to Year integers for the X-axis to match the scatter plot style
-    forecast_years = forecast['ds'].dt.year
-    ax.plot(forecast_years, forecast['yhat'], color='blue', label='Prophet Forecast')
-    
-    # Uncertainty Interval
-    ax.fill_between(forecast_years, 
-                    forecast['yhat_lower'], 
-                    forecast['yhat_upper'], 
-                    color='blue', alpha=0.2, label='Confidence Interval')
-
-    ax.set_xlabel('Year')
-    ax.set_ylabel('Sea Level (inches)')
-    ax.set_title(f'Sea Level Rise Prediction to {target_year}')
-    ax.legend()
-    ax.grid(True, alpha=0.3)
-
-    # Pass the Matplotlib figure to Streamlit
-    st.pyplot(fig)
-
-    # Show raw data
-    with st.expander("View Forecast Data"):
-        st.dataframe(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(10))
-
+# Safe extraction of values
+if not prophet_row.empty:
+    prophet_pred = prophet_row['yhat'].values[0]
+    prophet_lower = prophet_row['yhat_lower'].values[0]
+    prophet_upper = prophet_row['yhat_upper'].values[0]
 else:
+    prophet_pred = 0
+    prophet_lower = 0
+    prophet_upper = 0
 
-    st.warning("Please select a year in the future.")
+# Calculate Simple Models (Fast enough to run on-the-fly)
+lin_years, lin_preds, lin_target_val = get_linear_predictions(df, target_year)
+poly_years, poly_preds, poly_target_val = get_poly_predictions(df, target_year)
 
+# ------------------------------------------------------------------------------
+# 4. VISUALISATION
+# ------------------------------------------------------------------------------
+
+st.markdown(f"### Predictions for {target_year}")
+
+# Metrics
+col1, col2, col3 = st.columns(3)
+col1.metric("Facebook Prophet", f"{prophet_pred:.2f}\"", f"± {(prophet_upper - prophet_lower)/2:.2f} uncertainty", delta_color="off")
+col2.metric("Linear Regression", f"{lin_target_val:.2f}\"", "Simple Trend")
+col3.metric("Polynomial (Deg 2)", f"{poly_target_val:.2f}\"", "Accelerated Trend")
+
+st.subheader("Model Comparison Plot")
+
+# Toggles
+st.write("Select models to display:")
+c1, c2, c3 = st.columns(3)
+show_prophet = c1.toggle('Show Prophet (Blue)', value=True)
+show_linear = c2.toggle('Show Linear (Red)', value=True)
+show_poly = c3.toggle('Show Polynomial (Green)', value=True)
+
+# Plotting
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Observed Data
+ax.scatter(df['Year'], df['CSIRO Adjusted Sea Level'], color='black', label='Observed Data', s=15, alpha=0.6)
+
+if show_linear:
+    ax.plot(lin_years, lin_preds, color='red', linestyle='--', linewidth=2, label='Linear Regression')
+
+if show_poly:
+    ax.plot(poly_years, poly_preds, color='green', linestyle='--', linewidth=2, label='Polynomial Regression')
+
+if show_prophet:
+    forecast_years = display_forecast['ds'].dt.year
+    ax.plot(forecast_years, display_forecast['yhat'], color='blue', linewidth=2, label='Prophet')
+    ax.fill_between(forecast_years, 
+                    display_forecast['yhat_lower'], 
+                    display_forecast['yhat_upper'], 
+                    color='blue', alpha=0.15)
+
+ax.set_xlabel('Year')
+ax.set_ylabel('Sea Level (inches)')
+ax.set_title(f'Forecast Models up to {target_year}')
+ax.legend()
+ax.grid(True, alpha=0.3)
+
+st.pyplot(fig)
+
+with st.expander("See comparison data"):
+    comparison_data = {
+        "Model": ["Prophet", "Linear", "Polynomial"],
+        "Prediction (inches)": [prophet_pred, lin_target_val, poly_target_val]
+    }
+    st.table(pd.DataFrame(comparison_data))
