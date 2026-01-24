@@ -46,7 +46,7 @@ def train_prophet_model(df, years_to_predict):
 
 st.title("🌊 Sea Level Predictor")
 st.markdown("""
-This app uses **Facebook Prophet** to forecast sea level rise based on historical data.
+This web app uses **Facebook Prophet** to forecast sea level rises using historical data from CSIRO.
 Use the controls below to adjust the prediction timeline.
 """)
 
@@ -59,7 +59,11 @@ except FileNotFoundError:
     st.stop()
 
 # Year Slider Controls
-target_year = st.slider("Predict up to Year", min_value=2024, max_value=2100, value=2050)
+st.divider() # Adds a nice visual separator
+st.subheader("Prediction Settings")
+target_year = st.slider("Select Target Year", min_value=2024, max_value=2100, value=2050)
+# ---------------------------------------------------
+
 
 # Calculate how many years to predict from the last data point
 last_year_in_data = df['Year'].max()
@@ -123,3 +127,4 @@ if years_to_predict > 0:
 else:
 
     st.warning("Please select a year in the future.")
+
