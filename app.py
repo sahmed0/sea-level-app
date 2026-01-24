@@ -58,9 +58,8 @@ except FileNotFoundError:
     st.error("Error: 'epa-sea-level.csv' not found. Please place it in the same folder.")
     st.stop()
 
-# Sidebar Controls
-st.sidebar.header("Settings")
-target_year = st.sidebar.slider("Predict up to Year", min_value=2024, max_value=2100, value=2050)
+# Year Slider Controls
+target_year = st.slider("Predict up to Year", min_value=2024, max_value=2100, value=2050)
 
 # Calculate how many years to predict from the last data point
 last_year_in_data = df['Year'].max()
@@ -122,4 +121,5 @@ if years_to_predict > 0:
         st.dataframe(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(10))
 
 else:
+
     st.warning("Please select a year in the future.")
