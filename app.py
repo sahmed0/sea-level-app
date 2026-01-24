@@ -16,7 +16,7 @@ MAX_PREDICTION_YEAR = 2100
 
 @st.cache_data
 def load_data():
-    """Loads the CSV data."""
+    """ Loads the CSV data."""
     df = pd.read_csv('epa-sea-level.csv')
     return df
 
@@ -49,7 +49,7 @@ def get_prophet_forecast(df):
     return forecast
 
 def get_linear_predictions(df, target_year):
-    """Calculates linear regression points up to target_year."""
+    """ Calculates linear regression points up to target_year."""
     x = df['Year']
     y = df['CSIRO Adjusted Sea Level']
     res = linregress(x, y)
@@ -60,7 +60,7 @@ def get_linear_predictions(df, target_year):
     return years, preds, target_val
 
 def get_poly_predictions(df, target_year, degree=2):
-    """Calculates polynomial regression points up to target_year."""
+    """ Calculates polynomial regression points up to target_year."""
     x = df['Year']
     y = df['CSIRO Adjusted Sea Level']
     coefs = np.polyfit(x, y, degree)
@@ -77,13 +77,12 @@ def get_poly_predictions(df, target_year, degree=2):
 
 st.title("🌊 Sea Level Predictor")
 st.markdown("""
-Compare **Prophet**, **Linear Regression**, and **Polynomial Regression** models to forecast sea level rise.
+Compare **Prophet**, **Linear Regression**, and **Polynomial Regression** models to forecast sea level rise based on CSIRO historical data.
 """)
 
 try:
     df = load_data()
-    # success message removed to keep UI clean, or you can keep it:
-    # st.success("Data loaded", icon="✅") 
+    
 except FileNotFoundError:
     st.error("Error: 'epa-sea-level.csv' not found.")
     st.stop()
@@ -100,7 +99,7 @@ target_year = st.slider("Select Target Year", min_value=2024, max_value=MAX_PRED
 
 # --- 3. FILTER DATA FOR DISPLAY ---
 # Slice the Prophet dataframe to only show up to the user's target year
-# We use the cached 'full_prophet_forecast' and just filter it.
+# Use the cached 'full_prophet_forecast' and just filter it.
 target_date_limit = pd.Timestamp(year=target_year, month=12, day=31)
 display_forecast = full_prophet_forecast[full_prophet_forecast['ds'] <= target_date_limit]
 
@@ -130,9 +129,9 @@ st.markdown(f"### Predictions for {target_year}")
 
 # Metrics
 col1, col2, col3 = st.columns(3)
-col1.metric("Facebook Prophet", f"{prophet_pred:.2f}\"", f"± {(prophet_upper - prophet_lower)/2:.2f} uncertainty", delta_color="off")
-col2.metric("Linear Regression", f"{lin_target_val:.2f}\"", "Simple Trend")
-col3.metric("Polynomial (Deg 2)", f"{poly_target_val:.2f}\"", "Accelerated Trend")
+col1.metric("Facebook Prophet", f"{prophet_pred:.2f}\"", f"± {(prophet_upper - prophet_lower)/2:.2f} uncertainty")
+col2.metric("Linear Regression", f"{lin_target_val:.2f}\"", "Oversimplified")
+col3.metric("Polynomial (Deg 2)", f"{poly_target_val:.2f}\"", "Good Approximation")
 
 st.subheader("Model Comparison Plot")
 
@@ -180,4 +179,3 @@ st.markdown(
     """, 
     unsafe_allow_html=True
 )
-
