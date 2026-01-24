@@ -12,8 +12,7 @@ Unlike simple trend lines, this app allows users to visualise how different math
 
 **[Click here to launch the App](https://sea-level-app-faqqps9amzyqpcsoxntfb4.streamlit.app/)**
 
-![App Screenshot](app_screenshot.png)
-*(Note: Please update the screenshot in your repo to show the new UI with toggle switches!)*
+![App Screenshot](app_interface.png) 
 
 ## 🧐 What does this app do?
 
