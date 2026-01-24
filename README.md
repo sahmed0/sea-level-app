@@ -10,6 +10,8 @@ An interactive web application that forecasts global sea level rise using **Face
 
 **[Click here to launch the App](https://sea-level-app-faqqps9amzyqpcsoxntfb4.streamlit.app/)**
 
+![App Screenshot](sea level app_screenshot.png)
+
 ## 🧐 What does this app do?
 
 This application takes historical sea level data (1880–Present) and allows users to:
