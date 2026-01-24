@@ -41,8 +41,8 @@ If you want to run this code on your own machine instead of the web:
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/your-username/sea-level-predictor.git](https://github.com/your-username/sea-level-predictor.git)
-    cd sea-level-predictor
+    git clone https://github.com/your-username/sea-level-app.git
+    cd sea-level-app
     ```
 
 2.  **Install dependencies:**
