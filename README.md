@@ -73,3 +73,12 @@ If you want to run this code on your own machine:
 
 ## 📉 Data Source
 Global Average Absolute Sea Level Change, 1880-2014 from the US Environmental Protection Agency using data from CSIRO, 2015; NOAA, 2015.
+
+---
+## 📄 License
+Copyright © 2026 Sajid Ahmed. All Rights Reserved.
+
+This repository is intended solely for portfolio review and recruitment purposes. By accessing this repository, you acknowledge the following terms:
+- View Only: Permission is granted to view the source code for the purpose of evaluating my professional skills and experience.
+- No Unauthorised Use: No permission is granted to copy, modify, distribute, or use this code for any personal, commercial, or educational project.
+- No AI Training: Use of this source code for the purpose of training machine learning models or generative AI is strictly prohibited.
