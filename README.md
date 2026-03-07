@@ -4,11 +4,12 @@ An interactive web application that forecasts global sea level rise by comparing
 
 Unlike simple trend lines, this app allows users to visualise how different mathematical approaches diverge when predicting the future of our oceans.
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://sea-level-app-faqqps9amzyqpcsoxntfb4.streamlit.app/)
 ![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
 ![Library](https://img.shields.io/badge/Models-Prophet%20%7C%20Scipy%20%7C%20Numpy-orange)
 
-## 🚀 Live Demo
+## Live Demo
 
 **[Click here to launch the App](https://sea-level-forecast.streamlit.app/)**
 
@@ -16,7 +17,7 @@ Unlike simple trend lines, this app allows users to visualise how different math
 
 ![App Screenshot](app_interface.png) 
 
-## 🧐 What does this app do?
+## What does this app do?
 
 This application takes historical sea level data (1880–Present) and allows users to:
 1.  **Visualise History:** See the raw EPA/CSIRO data points.
@@ -26,7 +27,7 @@ This application takes historical sea level data (1880–Present) and allows use
     * **Facebook Prophet (Blue):** A complex machine-learning model with confidence intervals.
 3.  **Interact:** Use the main slider to adjust the prediction year (up to 2100) and toggle switches to filter which models are displayed on the graph.
 
-## 📊 The Three Models Explained
+## The Three Models Explained
 
 The app helps visualise why model selection matters:
 
@@ -36,7 +37,7 @@ The app helps visualise why model selection matters:
 | **Polynomial (Deg 2)** | Quadratic | Sea level rise is accelerating over time (curved line). |
 | **Facebook Prophet** | Time-Series ML | Captures non-linear trends, seasonality, and provides a "cone of uncertainty" (confidence interval). |
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **Streamlit**: For the interactive web interface and caching.
 * **Prophet**: For the machine learning time-series forecasting.
@@ -45,7 +46,7 @@ The app helps visualise why model selection matters:
 * **Pandas**: For data manipulation.
 * **Matplotlib**: For plotting the comparative graph.
 
-## 💻 How to Run Locally
+## How to Run Locally
 
 If you want to run this code on your own machine:
 
@@ -65,21 +66,24 @@ If you want to run this code on your own machine:
     streamlit run app.py
     ```
 
-## 📂 Project Structure
+## Project Structure
 
 * `app.py`: The main application code containing the UI, caching logic, and model calculations.
 * `requirements.txt`: List of Python libraries required for Streamlit Cloud.
 * `epa-sea-level.csv`: The historical dataset.
 
-## 📉 Data Source
+## Data Source
 Global Average Absolute Sea Level Change, 1880-2014 from the US Environmental Protection Agency using data from CSIRO, 2015; NOAA, 2015.
 
 ---
 
-## MIT Licence
+## License
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-This project is licensed under the **MIT Licence**. 
+Copyright © 2026 Sajid Ahmed
 
-This means you are free to use, copy, modify, and distribute the software for any purpose, including commercial applications, provided that the original copyright notice and this permission notice are included in all copies or substantial portions of the software.
+This program is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License** as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-*See the [LICENSE](LICENSE) file for the full text.*
+This program is distributed in the hope that it will be useful, but **WITHOUT ANY WARRANTY**; without even the implied warranty of **MERCHANTABILITY** or **FITNESS FOR A PARTICULAR PURPOSE**. 
+
+See the [LICENSE](LICENSE) file for more details.
