@@ -35,7 +35,7 @@ jobs:
 
       - name: Install dependencies and pre-compute Prophet
         run: |
-          pip install pandas numpy prophet scipy
+          pip install pandas numpy prophet scipy streamlit matplotlib
           python precompute_prophet.py
 
       - name: Upload artifact
