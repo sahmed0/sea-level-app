@@ -1,19 +1,17 @@
-# 🌊 Sea Level Predictor & Model Comparison
+# 🌊 Sea Level Forecasting & Model Comparison
 
 An interactive web application that forecasts global sea level rise by comparing three distinct statistical models: **Facebook Prophet**, **Linear Regression**, and **Polynomial Regression**.
 
 Unlike simple trend lines, this app allows users to visualise how different mathematical approaches diverge when predicting the future of our oceans.
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://sea-level-app-faqqps9amzyqpcsoxntfb4.streamlit.app/)
-![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
-![Library](https://img.shields.io/badge/Models-Prophet%20%7C%20Scipy%20%7C%20Numpy-orange)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-green.svg)](https://www.gnu.org/licenses/gpl-3.0)
+![Python](https://img.shields.io/badge/Python-3.9+-yellow.svg)
+![Library](https://img.shields.io/badge/Models-Facebook%20Prophet-blue)
 
-## Live Demo
 
-**[Click here to launch the App](https://sea-level-forecast.streamlit.app/)**
+## ⏯️ **[Click to use the App](https://sajidahmed.co.uk/sea-level-app)**
 
-*(Note: The webapp is hosted on a free instance. Please allow 30 seconds for the server to wake up upon first access.)*
+**Note: on first access, it may take few seconds for Streamlit to build the app in your browser**
 
 ![App Screenshot](app_interface.png) 
 
@@ -25,7 +23,7 @@ This application takes historical sea level data (1880–Present) and allows use
     * **Linear Regression (Red):** A simple straight-line projection.
     * **Polynomial Regression (Green):** A quadratic curve that accounts for acceleration.
     * **Facebook Prophet (Blue):** A complex machine-learning model with confidence intervals.
-3.  **Interact:** Use the main slider to adjust the prediction year (up to 2100) and toggle switches to filter which models are displayed on the graph.
+3.  **Interact:** Use the main slider to adjust the prediction year (up to 2200) and toggle switches to filter which models are displayed on the graph.
 
 ## The Three Models Explained
 
@@ -66,11 +64,24 @@ If you want to run this code on your own machine:
     streamlit run app.py
     ```
 
-## Project Structure
+## Project Architecture
 
-* `app.py`: The main application code containing the UI, caching logic, and model calculations.
-* `requirements.txt`: List of Python libraries required for Streamlit Cloud.
-* `epa-sea-level.csv`: The historical dataset.
+```mermaid
+graph TD
+    A[app.py] --> B[data.py]
+    A --> C[models.py]
+    A --> D[visuals.py]
+    A --> E[config.py]
+    B --> F[(epa-sea-level.csv)]
+```
+
+*   `app.py`: The UI orchestrator. Manages layout, user input, and component state.
+*   `data.py`: Data ingestion layer. Handles loading and caching of the historical dataset.
+*   `models.py`: Forecasting logic. Includes Prophet, Linear, and Polynomial regression models.
+*   `visuals.py`: Plotting module. Generates Matplotlib figures for the UI.
+*   `config.py`: Global configuration and shared constants.
+*   `epa-sea-level.csv`: Historical dataset (1880–Present).
+*   `requirements.txt`: Python dependencies.
 
 ## Data Source
 Global Average Absolute Sea Level Change, 1880-2014 from the US Environmental Protection Agency using data from CSIRO, 2015; NOAA, 2015.
