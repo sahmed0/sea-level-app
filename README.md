@@ -73,13 +73,17 @@ graph TD
     A --> D[visuals.py]
     A --> E[config.py]
     B --> F[(epa-sea-level.csv)]
+    G[precompute_prophet.py] --> H[(prophet_forecast.csv)]
+    C --> H
 ```
 
 *   `app.py`: The UI orchestrator. Manages layout, user input, and component state.
 *   `data.py`: Data ingestion layer. Handles loading and caching of the historical dataset.
-*   `models.py`: Forecasting logic. Includes Prophet, Linear, and Polynomial regression models.
+*   `models.py`: Forecasting logic. Now reads the pre-computed Prophet forecast if available; otherwise falls back to calculating it.
 *   `visuals.py`: Plotting module. Generates Matplotlib figures for the UI.
 *   `config.py`: Global configuration and shared constants.
+*   `precompute_prophet.py`: Script to generate the Prophet forecast server-side (required for compatibility with browser-side stlite/Pyodide).
+*   `prophet_forecast.csv`: Pre-computed Prophet forecast data.
 *   `epa-sea-level.csv`: Historical dataset (1880–Present).
 *   `requirements.txt`: Python dependencies.
 
