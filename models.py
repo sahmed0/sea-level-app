@@ -3,45 +3,28 @@
 from scipy.stats import linregress, t
 import numpy as np
 import pandas as pd
-import streamlit as st
-import os
 
-@st.cache_data
-def getProphetForecast(df, maxPredictionYear):
+def getProphetForecast() -> pd.DataFrame:
+    """Load the pre-computed Prophet forecast from the static CSV asset.
+
+    Prophet requires native Stan/C++ extensions that are incompatible with
+    Pyodide. The forecast is therefore pre-computed offline and committed
+    as a static file. This function always reads from that file.
+
+    Returns:
+        DataFrame containing columns 'ds', 'yhat', 'yhat_lower', 'yhat_upper'.
+
+    Raises:
+        RuntimeError: If the pre-computed CSV file cannot be found.
     """
-    If 'prophet_forecast.csv' exists, reads the pre-computed forecast.
-    Otherwise, trains the Prophet model ONCE and forecasts up to the global maxPredictionYear.
-    This function is cached, so it only runs the first time the app loads.
-    """
-    if os.path.exists("prophet_forecast.csv"):
-        forecast = pd.read_csv("prophet_forecast.csv")
+    try:
+        forecast = pd.read_csv('prophet_forecast.csv')
         forecast['ds'] = pd.to_datetime(forecast['ds'])
         return forecast
-    else:
-        from prophet import Prophet
-        
-        # Prepare data
-        data = df[['Year', 'CSIRO Adjusted Sea Level']].rename(columns={
-            'Year': 'ds', 
-            'CSIRO Adjusted Sea Level': 'y'
-        })
-        data['ds'] = pd.to_datetime(data['ds'], format='%Y').astype('datetime64[s]')
-
-        # Fit Model
-        m = Prophet(daily_seasonality=False, weekly_seasonality=False)
-        m.fit(data)
-
-        # Calculate years needed to reach 2200
-        lastYear = df['Year'].max()
-        yearsToPredict = maxPredictionYear - lastYear
-        
-        # Create forecast
-        future = m.make_future_dataframe(periods=yearsToPredict, freq='YS')
-        future['ds'] = future['ds'].astype('datetime64[s]')
-        forecast = m.predict(future)
-        
-        # We only return the forecast dataframe because that's all we need for plotting
-        return forecast
+    except FileNotFoundError as exc:
+        raise RuntimeError(
+            "'prophet_forecast.csv' not found. Run precompute_prophet.py locally to generate it."
+        ) from exc
 
 def getLinearPredictions(df, targetYear):
     """ Calculates linear regression points up to targetYear with 95% prediction interval."""

@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
-import streamlit as st
 
-@st.cache_data
-def loadData():
-    """
-    Loads the CSV data.
-    
+def loadData() -> pd.DataFrame:
+    """Load the CSIRO sea level CSV into a DataFrame.
+
     Returns:
-        pandas.DataFrame: The loaded sea level data.
+        The loaded sea level data.
+
+    Raises:
+        RuntimeError: If the CSV file cannot be found.
     """
     try:
-        df = pd.read_csv('epa-sea-level.csv')
-        return df
-    except FileNotFoundError:
-        st.error("Error: 'epa-sea-level.csv' not found.")
-        st.stop()
+        return pd.read_csv('epa-sea-level.csv')
+    except FileNotFoundError as exc:
+        raise RuntimeError("'epa-sea-level.csv' not found. Ensure the file is served alongside index.html.") from exc
