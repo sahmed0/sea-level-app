@@ -11,7 +11,7 @@ Unlike simple trend lines, this app allows users to visualise how different math
 
 ## ⏯️ **[Click to use the App](https://sajidahmed.co.uk/sea-level-app)**
 
-**Note: on first access, it may take few seconds for Streamlit to build the app in your browser**
+**Note: on first access, it may take a few seconds for the Python environment and data to load in your browser**
 
 ![App Screenshot](app_interface.png) 
 
@@ -37,7 +37,7 @@ The app helps visualise why model selection matters:
 
 ## Tech Stack
 
-* **Streamlit**: For the interactive web interface and caching.
+* **PyScript**: For running Python and the web interface in the browser.
 * **Prophet**: For the machine learning time-series forecasting.
 * **Scipy**: For calculating the Linear Regression.
 * **Numpy**: For calculating the Polynomial Regression.
@@ -59,30 +59,33 @@ If you want to run this code on your own machine:
     pip install -r requirements.txt
     ```
 
-3.  **Run the App:**
+3.  **Run a local web server:**
     ```bash
-    streamlit run app.py
+    python -m http.server
     ```
+    Then open `http://localhost:8000` in your browser.
 
 ## Project Architecture
 
 ```mermaid
 graph TD
-    A[app.py] --> B[data.py]
-    A --> C[models.py]
-    A --> D[visuals.py]
-    A --> E[config.py]
+    A[index.html] --> I[main.py]
+    I --> B[data.py]
+    I --> C[models.py]
+    I --> D[visuals.py]
+    I --> E[config.py]
     B --> F[(epa-sea-level.csv)]
     G[precompute_prophet.py] --> H[(prophet_forecast.csv)]
     C --> H
 ```
 
-*   `app.py`: The UI orchestrator. Manages layout, user input, and component state.
+*   `index.html`: The main HTML file that sets up the PyScript environment and web page structure.
+*   `main.py`: The UI orchestrator running in PyScript. Manages layout, user input, and component state.
 *   `data.py`: Data ingestion layer. Handles loading and caching of the historical dataset.
 *   `models.py`: Forecasting logic. Now reads the pre-computed Prophet forecast if available; otherwise falls back to calculating it.
 *   `visuals.py`: Plotting module. Generates Matplotlib figures for the UI.
 *   `config.py`: Global configuration and shared constants.
-*   `precompute_prophet.py`: Script to generate the Prophet forecast server-side (required for compatibility with browser-side stlite/Pyodide).
+*   `precompute_prophet.py`: Script to generate the Prophet forecast ahead of time, as it is computationally intensive to run in the browser.
 *   `prophet_forecast.csv`: Pre-computed Prophet forecast data.
 *   `epa-sea-level.csv`: Historical dataset (1880–Present).
 *   `requirements.txt`: Python dependencies.
