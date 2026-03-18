@@ -37,7 +37,7 @@ def main():
     # Create a future dataframe for predictions up to the max year
     future = model.make_future_dataframe(
         periods=(MAX_PREDICTION_YEAR - df['Year'].max()),
-        freq='Y'
+        freq='YE'
     )
     future['ds'] = future['ds'].astype('datetime64[s]')
 
