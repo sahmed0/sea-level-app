@@ -1,0 +1,547 @@
+/* --- Design Tokens ---------------------------------------------------- */
+:root {
+  /* Ocean-inspired mesh gradient colors */
+  --bg-color-1: #091221;
+  --bg-color-2: #162b4c;
+  --bg-color-3: #0f4c5c;
+  --bg-color-4: #05293c;
+
+  /* Glassmorphism tokens */
+  --glass-surface: rgba(255, 255, 255, 0.06);
+  --glass-surface-hover: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-border-highlight: rgba(255, 255, 255, 0.3);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  --glass-blur: blur(16px);
+  
+  /* Accents and Typography */
+  --colour-accent: #00f2fe;
+  --colour-accent-glow: rgba(0, 242, 254, 0.4);
+  --colour-text-primary: #ffffff;
+  --colour-text-secondary: rgba(255, 255, 255, 0.65);
+  
+  /* Model Colors - Adjusted for dark background */
+  --colour-prophet: #00f2fe;
+  --colour-linear: #ff3366;
+  --colour-poly: #00e676;
+  
+  /* Layout */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem; /* Larger border-radius for Bento grid */
+  
+  /* Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-medium: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Reset & Base ------------------------------------------------------ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-color-1);
+  color: var(--colour-text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* --- Animated Mesh Background ----------------------------------------- */
+.glass-bg-mesh {
+  position: fixed;
+  inset: -50%;
+  z-index: -1;
+  background: linear-gradient(-45deg, var(--bg-color-1), var(--bg-color-2), var(--bg-color-3), var(--bg-color-4));
+  background-size: 400% 400%;
+  animation: liquidGradient 15s ease infinite;
+}
+
+@keyframes liquidGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* --- Glass Card Utility ----------------------------------------------- */
+.card {
+  background: var(--glass-surface);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle diagonal shine for cards */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.03), transparent);
+  transform: skewX(-20deg);
+  transition: var(--transition-medium);
+  pointer-events: none;
+}
+.card:hover::before {
+  left: 200%;
+  transition: 1s ease-in-out;
+}
+
+.glass-divider {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--glass-border), transparent);
+  margin: 0.5rem 0;
+}
+
+/* --- Loading Overlay -------------------------------------------------- */
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 18, 33, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  z-index: 100;
+  transition: opacity var(--transition-medium), visibility var(--transition-medium);
+}
+
+#loading-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.spinner {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 3px solid var(--glass-border);
+  border-top-color: var(--colour-accent);
+  border-radius: 50%;
+  animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+  box-shadow: 0 0 20px var(--colour-accent-glow);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+#loading-text {
+  color: var(--colour-text-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* --- App Shell -------------------------------------------------------- */
+#app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#app-shell.hidden {
+  display: none;
+}
+
+/* --- Header ----------------------------------------------------------- */
+.app-header {
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.app-header__icon {
+  font-size: 2.25rem;
+  filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+}
+
+.app-header__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--colour-text-primary);
+}
+
+.app-header__subtitle {
+  font-size: 0.9rem;
+  color: var(--colour-text-secondary);
+  font-weight: 400;
+}
+
+/* --- Dashboard (Bento Grid Layout) ----------------------------------- */
+.dashboard {
+  width: min(1300px, calc(100% - 3rem));
+  margin: 2rem auto;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header"
+    "controls chart"
+    "controls metrics";
+  gap: 1.5rem;
+}
+
+.dashboard > .app-header { grid-area: header; }
+.dashboard > .sidebar { grid-area: controls; }
+.dashboard > .chart-card { grid-area: chart; }
+.dashboard > .metrics-grid { grid-area: metrics; }
+
+/* --- Sidebar Controls ------------------------------------------------- */
+.sidebar {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.control-group__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--colour-text-secondary);
+  margin-bottom: 1rem;
+}
+
+/* --- Year Slider ------------------------------------------------------- */
+.year-slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+
+#year-display {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--colour-accent);
+  text-shadow: 0 0 15px var(--colour-accent-glow);
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--colour-text-primary);
+  border: 2px solid var(--colour-accent);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--colour-accent-glow);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+input[type='range']::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 20px var(--colour-accent-glow);
+}
+
+.slider-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--colour-text-secondary);
+  margin-top: 0.5rem;
+}
+
+/* --- Unit Radio ------------------------------------------------------- */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: rgba(0,0,0,0.1);
+  transition: all var(--transition-fast);
+}
+
+.radio-option:hover {
+  background: var(--glass-surface-hover);
+  border-color: var(--glass-border-highlight);
+}
+
+.radio-option input[type='radio'] {
+  accent-color: var(--colour-accent);
+  width: 1.1rem;
+  height: 1.1rem;
+  cursor: pointer;
+}
+
+.radio-option input[type='radio']:checked + .radio-option__label {
+  color: var(--colour-accent);
+  font-weight: 500;
+  text-shadow: 0 0 8px var(--colour-accent-glow);
+}
+
+.radio-option__label {
+  font-size: 0.95rem;
+  transition: color var(--transition-fast);
+}
+
+/* --- Toggle Switches -------------------------------------------------- */
+.toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.toggle-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+}
+
+.toggle-item__label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.toggle-item__dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px currentColor; /* Glow based on background */
+}
+
+.toggle-item__dot--prophet { background: var(--colour-prophet); color: var(--colour-prophet); }
+.toggle-item__dot--linear { background: var(--colour-linear); color: var(--colour-linear); }
+.toggle-item__dot--poly { background: var(--colour-poly); color: var(--colour-poly); }
+
+/* Toggle switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 3rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+}
+
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+.toggle-switch__track {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--glass-border);
+  border-radius: 1.5rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.toggle-switch input:checked + .toggle-switch__track {
+  background: rgba(0, 242, 254, 0.2);
+  border-color: var(--colour-accent);
+}
+
+.toggle-switch__track::after {
+  content: '';
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  background: var(--colour-text-secondary);
+  border-radius: 50%;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.toggle-switch input:checked + .toggle-switch__track::after {
+  transform: translateX(1.5rem);
+  background: var(--colour-accent);
+  box-shadow: 0 0 10px var(--colour-accent-glow);
+}
+
+/* --- Chart Area ------------------------------------------------------- */
+.chart-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.chart-card__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--colour-text-secondary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+#chart-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.15); /* Darken container behind chart slightly */
+  border-radius: var(--radius-md);
+  padding: 1rem;
+}
+
+#chart-container img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+/* --- Metric Cards (Bottom Right Row) ---------------------------------- */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.metric-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  background: var(--glass-surface-hover);
+  border-color: var(--glass-border-highlight);
+}
+
+.metric-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.metric-card__dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.metric-card__dot--prophet { background: var(--colour-prophet); color: var(--colour-prophet); }
+.metric-card__dot--linear { background: var(--colour-linear); color: var(--colour-linear); }
+.metric-card__dot--poly { background: var(--colour-poly); color: var(--colour-poly); }
+
+.metric-card__name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--colour-text-secondary);
+}
+
+.metric-card__value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--colour-text-primary);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* --- Footer ----------------------------------------------------------- */
+.app-footer {
+  padding: 1rem 2rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--colour-text-secondary);
+}
+
+.app-footer a {
+  color: var(--colour-accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: text-shadow var(--transition-fast);
+}
+
+.app-footer a:hover {
+  text-shadow: 0 0 8px var(--colour-accent-glow);
+}
+
+/* --- Responsive (Collapsing the Bento Grid) --------------------------- */
+@media (max-width: 1024px) {
+  .dashboard {
+    width: min(900px, calc(100% - 2rem));
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "metrics"
+      "chart"
+      "controls";
+  }
+}
+
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .metric-card {
+    padding: 1.25rem;
+  }
+}

@@ -1,53 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="Compare Prophet, Linear, and Polynomial Regression models to forecast sea level rise based on CSIRO historical data." />
+
   <link rel="apple-touch-icon" sizes="180x180" href="public/favicon/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="public/favicon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="public/favicon/favicon-16x16.png">
   <link rel="manifest" href="public/favicon/site.webmanifest">
-  <title>Sea Level Predictor</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.63.1/build/stlite.css" />
+
+  <title>Sea Level Predictor | Liquid Glass Edition</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
+  <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
 </head>
 
 <body>
-  <div id="root"></div>
-  <script src="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.63.1/build/stlite.js"></script>
-  <script>
-    stlite.mount(
-      {
-        requirements: ["pandas", "numpy", "matplotlib", "scipy"],
-        entrypoint: "app.py",
-        files: {
-          "app.py": {
-            url: "app.py",
-          },
-          "epa-sea-level.csv": {
-            url: "epa-sea-level.csv",
-          },
-          "prophet_forecast.csv": {
-            url: "prophet_forecast.csv",
-          },
-          "models.py": {
-            url: "models.py",
-          },
-          "visuals.py": {
-            url: "visuals.py",
-          },
-          "data.py": {
-            url: "data.py",
-          },
-          "config.py": {
-            url: "config.py",
-          },
-        },
-      },
-      document.getElementById("root")
-    );
-  </script>
-</body>
+  <div class="glass-bg-mesh"></div>
 
+  <div id="loading-overlay" class="glass-panel">
+    <div class="spinner"></div>
+    <p id="loading-text">Initialising models…</p>
+  </div>
+
+  <div id="app-shell" class="hidden">
+
+    <div class="dashboard" aria-label="Sea level prediction dashboard">
+
+      <header class="app-header card">
+        <div class="app-header__brand">
+          <span class="app-header__icon" aria-hidden="true">🌊</span>
+          <div class="app-header__text">
+            <h1 class="app-header__title">Sea Level Predictor</h1>
+            <p class="app-header__subtitle">CSIRO Historical Data · Prophet · Linear · Polynomial</p>
+          </div>
+        </div>
+      </header>
+
+      <aside class="sidebar card" aria-label="Control panel">
+
+        <div class="control-group">
+          <p class="control-group__label">Target Year</p>
+          <div class="year-slider-header">
+            <span class="control-group__label" style="margin-bottom:0; letter-spacing: normal;">Forecast to</span>
+            <span id="year-display">2050</span>
+          </div>
+          <input
+            id="year-slider"
+            type="range"
+            min="2024"
+            max="2200"
+            value="2050"
+            step="1"
+            aria-label="Select target year"
+          />
+          <div class="slider-range-labels">
+            <span>2024</span>
+            <span>2200</span>
+          </div>
+        </div>
+
+        <hr class="glass-divider" />
+
+        <div class="control-group">
+          <p class="control-group__label">Measurement Unit</p>
+          <div class="radio-group" role="radiogroup" aria-label="Measurement unit">
+            <label class="radio-option">
+              <input type="radio" name="unit" value="Inches" checked />
+              <span class="radio-option__label">Inches</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="unit" value="Centimetres" />
+              <span class="radio-option__label">Centimetres</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="unit" value="Metres" />
+              <span class="radio-option__label">Metres</span>
+            </label>
+          </div>
+        </div>
+
+        <hr class="glass-divider" />
+
+        <div class="control-group">
+          <p class="control-group__label">Models</p>
+          <div class="toggle-group">
+
+            <div class="toggle-item">
+              <span class="toggle-item__label">
+                <span class="toggle-item__dot toggle-item__dot--prophet"></span>
+                Prophet
+              </span>
+              <label class="toggle-switch" aria-label="Toggle Prophet model">
+                <input id="toggle-prophet" type="checkbox" checked />
+                <span class="toggle-switch__track"></span>
+              </label>
+            </div>
+
+            <div class="toggle-item">
+              <span class="toggle-item__label">
+                <span class="toggle-item__dot toggle-item__dot--linear"></span>
+                Linear Regression
+              </span>
+              <label class="toggle-switch" aria-label="Toggle Linear Regression model">
+                <input id="toggle-linear" type="checkbox" checked />
+                <span class="toggle-switch__track"></span>
+              </label>
+            </div>
+
+            <div class="toggle-item">
+              <span class="toggle-item__label">
+                <span class="toggle-item__dot toggle-item__dot--poly"></span>
+                Polynomial
+              </span>
+              <label class="toggle-switch" aria-label="Toggle Polynomial Regression model">
+                <input id="toggle-poly" type="checkbox" checked />
+                <span class="toggle-switch__track"></span>
+              </label>
+            </div>
+
+          </div>
+        </div>
+
+      </aside>
+
+      <section class="chart-card card" aria-labelledby="chart-title">
+        <div class="chart-card__header">
+          <p id="chart-title" class="chart-card__title">Model Comparison Plot</p>
+          <div class="chart-card__glass-reflection"></div>
+        </div>
+        <div id="chart-container"></div>
+      </section>
+
+      <section class="metrics-grid" role="region" aria-label="Model predictions">
+
+        <div class="metric-card card">
+          <div class="metric-card__header">
+            <span class="metric-card__dot metric-card__dot--prophet"></span>
+            <span class="metric-card__name">Prophet</span>
+          </div>
+          <div id="metric-prophet" class="metric-card__value">—</div>
+        </div>
+
+        <div class="metric-card card">
+          <div class="metric-card__header">
+            <span class="metric-card__dot metric-card__dot--linear"></span>
+            <span class="metric-card__name">Linear Regression</span>
+          </div>
+          <div id="metric-linear" class="metric-card__value">—</div>
+        </div>
+
+        <div class="metric-card card">
+          <div class="metric-card__header">
+            <span class="metric-card__dot metric-card__dot--poly"></span>
+            <span class="metric-card__name">Polynomial</span>
+          </div>
+          <div id="metric-poly" class="metric-card__value">—</div>
+        </div>
+
+      </section>
+
+    </div><footer class="app-footer">
+      Created by <strong>Sajid Ahmed</strong> ·
+      <a href="https://github.com/sahmed0/sea-level-app" target="_blank" rel="noopener">GitHub</a>
+    </footer>
+
+  </div><script>
+    // JS bridge called from Python once init_app() completes successfully.
+    window.hideLoader = function () {
+      const overlay = document.getElementById('loading-overlay');
+      const shell = document.getElementById('app-shell');
+      overlay.classList.add('hidden');
+      shell.classList.remove('hidden');
+    };
+  </script>
+
+  <py-config>
+    packages = ["pandas", "numpy", "matplotlib", "scipy"]
+    [[fetch]]
+    files = ["main.py", "data.py", "models.py", "visuals.py", "config.py",
+             "epa-sea-level.csv", "prophet_forecast.csv"]
+  </py-config>
+  <script type="py" src="./main.py"></script>
+
+</body>
 </html>
