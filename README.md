@@ -13,7 +13,7 @@ Unlike simple trend lines, this app allows users to visualise how different math
 
 **Note: on first access, it may take a few seconds for the Python environment and data to load in your browser**
 
-![App Screenshot](app_interface.png) 
+![App Screenshot](preview.png) 
 
 ## What does this app do?
 
