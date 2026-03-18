@@ -17,8 +17,7 @@ print(f"Poly: {polyTargetVal:.4f} +/- {polyUnc:.4f}")
 
 # Prophet
 forecast = getProphetForecast()
-targetDate = pd.Timestamp(year=targetYear, month=12, day=31)
-prophetRow = forecast[forecast['ds'] == targetDate]
+prophetRow = forecast[forecast['ds'].dt.year == targetYear]
 if not prophetRow.empty:
     p_val = prophetRow['yhat'].values[0]
     p_unc = (prophetRow['yhat_upper'].values[0] - prophetRow['yhat_lower'].values[0]) / 2

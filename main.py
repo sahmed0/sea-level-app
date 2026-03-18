@@ -135,8 +135,7 @@ async def init_app() -> None:
         target_limit = pd.Timestamp(year=target_year, month=12, day=31)
         display_forecast = full_prophet_forecast[full_prophet_forecast['ds'] <= target_limit]
 
-        target_start = pd.Timestamp(year=target_year, month=1, day=1)
-        prophet_row = full_prophet_forecast[full_prophet_forecast['ds'] == target_start]
+        prophet_row = full_prophet_forecast[full_prophet_forecast['ds'].dt.year == target_year]
 
         if not prophet_row.empty:
             prophet_pred = prophet_row['yhat'].values[0]
