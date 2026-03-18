@@ -16,8 +16,8 @@ _, _, polyTargetVal, polyUnc = getPolyPredictions(df, targetYear)
 print(f"Poly: {polyTargetVal:.4f} +/- {polyUnc:.4f}")
 
 # Prophet
-forecast = getProphetForecast(df, 2050)
-targetDate = pd.Timestamp(year=targetYear, month=1, day=1)
+forecast = getProphetForecast()
+targetDate = pd.Timestamp(year=targetYear, month=12, day=31)
 prophetRow = forecast[forecast['ds'] == targetDate]
 if not prophetRow.empty:
     p_val = prophetRow['yhat'].values[0]
