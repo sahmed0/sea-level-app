@@ -5,7 +5,8 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <meta name="description" content="Compare Prophet, Linear, and Polynomial Regression models to forecast sea level rise based on CSIRO historical data." />
+  <meta name="description"
+    content="Compare Prophet, Linear, and Polynomial Regression models to forecast sea level rise based on CSIRO historical data." />
 
   <link rel="apple-touch-icon" sizes="180x180" href="public/favicon/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="public/favicon/favicon-32x32.png">
@@ -41,7 +42,8 @@
           <span class="app-header__icon" aria-hidden="true">🌊</span>
           <div class="app-header__text">
             <h1 class="app-header__title">Sea Level Predictor</h1>
-            <p class="app-header__subtitle">Compare Prophet, Linear Regression, and Polynomial Regression models to forecast sea level rise based on CSIRO historical data.</p>
+            <p class="app-header__subtitle">Compare Prophet, Linear Regression, and Polynomial Regression models to
+              forecast sea level rise based on CSIRO historical data.</p>
           </div>
         </div>
       </header>
@@ -54,15 +56,8 @@
             <span class="control-group__label" style="margin-bottom:0; letter-spacing: normal;">Forecast to</span>
             <span id="year-display">2050</span>
           </div>
-          <input
-            id="year-slider"
-            type="range"
-            min="2024"
-            max="2200"
-            value="2050"
-            step="1"
-            aria-label="Select target year"
-          />
+          <input id="year-slider" type="range" min="2024" max="2200" value="2050" step="1"
+            aria-label="Select target year" />
           <div class="slider-range-labels">
             <span>2024</span>
             <span>2200</span>
@@ -169,12 +164,14 @@
 
       </section>
 
-    </div><footer class="app-footer">
-      Created by <strong>Sajid Ahmed</strong> ·
+    </div>
+    <footer class="app-footer">
+      <strong>2026 Sajid Ahmed</strong> · Licensed under GNU GLP v3.0 ·
       <a href="https://github.com/sahmed0/sea-level-app" target="_blank" rel="noopener">GitHub</a>
     </footer>
 
-  </div><script>
+  </div>
+  <script>
     // JS bridge called from Python once init_app() completes successfully.
     window.hideLoader = function () {
       const overlay = document.getElementById('loading-overlay');
@@ -188,9 +185,10 @@
     packages = ["pandas", "numpy", "matplotlib", "scipy"]
     [[fetch]]
     files = ["main.py", "data.py", "models.py", "visuals.py", "config.py",
-             "epa-sea-level.csv", "prophet_forecast.csv"]
+    "epa-sea-level.csv", "prophet_forecast.csv"]
   </py-config>
   <script type="py" src="./main.py"></script>
 
 </body>
+
 </html>
