@@ -12,6 +12,8 @@
   <link rel="icon" type="image/png" sizes="32x32" href="public/favicon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="public/favicon/favicon-16x16.png">
   <link rel="manifest" href="public/favicon/site.webmanifest">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@kiwicarbon/assets/dist/kiwi.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <title>Sea Level Predictor | Sajid Ahmed</title>
 
@@ -39,7 +41,7 @@
 
       <header class="app-header card">
         <div class="app-header__brand">
-          <span class="app-header__icon" aria-hidden="true">🌊</span>
+          <a class="app-header__icon" aria-hidden="true" href="https://sajidahmed.co.uk"><i class="kiwi-logo"></i></a>
           <div class="app-header__text">
             <h1 class="app-header__title">Sea Level Predictor</h1>
             <p class="app-header__subtitle">Compare Prophet, Linear Regression, and Polynomial Regression models to
@@ -56,11 +58,11 @@
             <span class="control-group__label" style="margin-bottom:0; letter-spacing: normal;">Forecast to</span>
             <span id="year-display">2050</span>
           </div>
-          <input id="year-slider" type="range" min="2024" max="2200" value="2050" step="1"
+          <input id="year-slider" type="range" min="2025" max="2199" value="2050" step="1"
             aria-label="Select target year" />
           <div class="slider-range-labels">
-            <span>2024</span>
-            <span>2200</span>
+            <span>2025</span>
+            <span>2199</span>
           </div>
         </div>
 
@@ -166,8 +168,9 @@
 
     </div>
     <footer class="app-footer">
-      <strong>2026 Sajid Ahmed</strong> · Licensed under GNU GLP v3.0 ·
-      <a href="https://github.com/sahmed0/sea-level-app" target="_blank" rel="noopener">GitHub</a>
+      <p><strong>2026 Sajid Ahmed</strong> · GNU GLP v3.0</p>
+      <a href="https://github.com/sahmed0/sea-level-app" target="_blank" rel="noopener" aria-label="GitHub"><i
+          class="fa-brands fa-github"></i></a>
     </footer>
 
   </div>
