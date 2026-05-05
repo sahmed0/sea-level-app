@@ -1,10 +1,10 @@
 /* --- Design Tokens ---------------------------------------------------- */
 :root {
   /* Ocean-inspired mesh gradient colors */
-  --bg-color-1: #091221;
-  --bg-color-2: #162b4c;
-  --bg-color-3: #0f4c5c;
-  --bg-color-4: #05293c;
+  --bg-color-1: #006466;
+  --bg-color-2: #065A60;
+  --bg-color-3: #0B525B;
+  --bg-color-4: #144552;
 
   /* Glassmorphism tokens */
   --glass-surface: rgba(255, 255, 255, 0.06);
@@ -49,13 +49,14 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  scrollbar-width: thin;
 }
 
 body {
   background-color: var(--bg-color-1);
   color: var(--colour-text-primary);
   font-family: var(--font-sans);
-  line-height: 1.6;
+  line-height: 1.5;
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
@@ -126,10 +127,8 @@ body {
 /* --- Loading Overlay -------------------------------------------------- */
 #loading-overlay {
   position: fixed;
+  background: #065A60;
   inset: 0;
-  background: rgba(9, 18, 33, 0.7);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -137,11 +136,13 @@ body {
   gap: 1.5rem;
   z-index: 100;
   transition: opacity var(--transition-medium), visibility var(--transition-medium);
+  will-change: opacity, visibility;
 }
 
 #loading-overlay.hidden {
   opacity: 0;
   visibility: hidden;
+  display: none;
 }
 
 .spinner {
@@ -172,10 +173,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
-
-#app-shell.hidden {
-  display: none;
 }
 
 /* --- Header ----------------------------------------------------------- */
@@ -454,16 +451,42 @@ input[type='range']::-webkit-slider-thumb:hover {
 
 /* --- Chart Area ------------------------------------------------------- */
 .chart-card {
-  padding: 1.5rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
+}
+
+/* Expanded State (Modal Overlay) */
+.chart-card.expanded {
+  position: fixed;
+  top: 2rem;
+  left: 1rem;
+  right: 1rem;
+  bottom: 2rem;
+  z-index: 1000;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.2);
+  grid-column: unset !important;
+  grid-row: unset !important;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+}
+
+/* Expand Button */
+.expand-btn {
+  background: none;
+  border: 1px solid var(--glass-border);
+  color: var(--colour-accent);
+  cursor: pointer;
+  padding: 0.6rem;
+  border-radius: var(--radius-sm);
 }
 
 .chart-card__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .chart-card__title {
@@ -479,10 +502,10 @@ input[type='range']::-webkit-slider-thumb:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.2);
   /* Darken container behind chart slightly */
   border-radius: var(--radius-md);
-  padding: 1rem;
+  padding: 0.5rem;
 }
 
 #chart-container img {
@@ -579,7 +602,7 @@ input[type='range']::-webkit-slider-thumb:hover {
 
 .app-footer a:hover {
   text-shadow: 0 0 8px var(--colour-accent-glow);
-  transform: scale(1.3) rotate(1deg);
+  transform: scale(1.2) rotate(1deg);
 }
 
 /* --- Responsive (Collapsing the Bento Grid) --------------------------- */

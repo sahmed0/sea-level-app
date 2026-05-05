@@ -60,7 +60,7 @@ async def init_app() -> None:
 
     # Unit conversion constants from Inches (base unit in the dataset).
     UNIT_CONVERSIONS = {
-        'Inches':      {'multiplier': 1.0,    'suffix': '"'},
+        'Inches':      {'multiplier': 1.0,    'suffix': 'in'},
         'Centimetres': {'multiplier': 2.54,   'suffix': ' cm'},
         'Metres':      {'multiplier': 0.0254, 'suffix': ' m'},
     }
@@ -110,8 +110,8 @@ async def init_app() -> None:
             suffix: Unit suffix string to append to each number.
         """
         document.getElementById(element_id).innerHTML = (
-            f'{value:.2f}{suffix}'
-            f'<span class="metric-uncertainty">± {uncertainty:.2f}{suffix}</span>'
+            f'{value:.3f}{suffix}'
+            f'<span class="metric-uncertainty">± {uncertainty:.3f}{suffix}</span>'
         )
 
     def update_dashboard(event=None) -> None:
